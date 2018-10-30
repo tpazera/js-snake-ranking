@@ -1,0 +1,27 @@
+version: '3'
+
+services:
+  mysql:
+    image: mariadb:${MARIADB_VERSION}
+    container_name: ${MARIADB_CONTAINER_NAME}
+    environment:
+      - MYSQL_ROOT_PASSWORD=root
+      - MYSQL_USER=root
+      - MYSQL_PASSWORD=root
+    restart: unless-stopped
+    ports:
+      - 3306:3306
+    volumes:
+      - ./dbdata:/var/lib/mysql/
+  web:
+    build: .
+    container_name: ${PHP_CONTAINER_NAME}
+    depends_on:
+      - mysql
+    volumes:
+      - ./php/:/var/www/html/
+    ports:
+      - "80:80"
+volumes:
+  dbdata:
+  php:
