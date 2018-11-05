@@ -19,7 +19,6 @@ function collisionWithSnake(snake) {
 
 function collisionWithBorder(snake, mapSize) {
     if(snake.body[0].x == -1 || snake.body[0].x == mapSize || snake.body[0].y == -1 || snake.body[0].y == mapSize) {
-        console.log(snake.body[0].x + " " + snake.body[0].y + " " + mapSize);
         return true;
     }
     return false;

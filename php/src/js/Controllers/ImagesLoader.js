@@ -1,7 +1,6 @@
 function loader(items, loadFunction, allDone) {
     if (!items) { return; }
 
-    //convert single item to array
     if ("undefined" === items.length) { items = [items]; }
 
     var count = items.length;

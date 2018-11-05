@@ -3,7 +3,7 @@
 
 <?php
 
-require_once('connection.php');
+require_once('queries/connection.php');
 
 ?>
 
@@ -16,7 +16,7 @@ require_once('connection.php');
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="css/style.css">
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-</head> 
+</head>
 
 <body>
     <div class="container">
@@ -26,7 +26,7 @@ require_once('connection.php');
                     <h1>Ultimate Snake <small>by Tomasz Pazera</small></h1>
                 </div>
             </div>
-        </div> 
+        </div>
         <p></p>
         <div class="row main-panel">
             <div class="col-lg-5 buttons-panel">
@@ -54,13 +54,13 @@ require_once('connection.php');
                     <input type="text" disabled class="form-control" value="Points: " id="points">
                 </div>
                 <div class="left-panel ranking-left-panel">
-                    <select class="game-map-select custom-select">
+                    <select class="ranking-map-select custom-select">
                         <option>Easy</option>
                         <option>Medium</option>
                         <option>Hard</option>
                     </select>
                     <p></p>
-                    <div class="form-control btn btn-info start-game-button">SHOW RANKING</div>
+                    <div class="form-control btn btn-info show-ranking-button">SHOW RANKING</div>
                 </div>
             </div>
             <div class="col-lg-7 game-panel right-panel">
@@ -85,10 +85,10 @@ require_once('connection.php');
                                                 <h5>Ranking:</h5>
                                                 <p class="ranking-info">
                                                 </p>
-                            
+
                                             </div>
                                             <div class="modal-footer">
-                                                
+
                                                 <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
                                             </div>
                                         </div>
@@ -105,9 +105,17 @@ require_once('connection.php');
                     <div class="col-lg-12">
                         <div id="ranking-table" class="ranking">
                             <h4>Ranking for map: Easy</h4>
-                            <ul>
-
-                            </ul>
+                            <table class="table">
+                                <thead>
+                                    <tr>
+                                        <th scope="col">#</th>
+                                        <th scope="col">Nickname</th>
+                                        <th scope="col">Points</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                </tbody>
+                            </table>
                         </div>
                     </div>
                 </div>

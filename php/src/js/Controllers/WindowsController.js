@@ -21,6 +21,11 @@ $( document ).ready(function() {
                 var btn_name = "start-button";
                 if($(active_button).hasClass("start-button")) btn_name = ".game-panel, .game-left-panel";
                 else btn_name = ".ranking-panel, .ranking-left-panel"; 
+                if($(active_button).hasClass("ranking-button")) {
+                    var ranking = new Ranking();
+                    ranking.showRanking($(".ranking-map-select").val());
+                    console.log($(".ranking-map-select").val());
+                }
                 $(btn_name).css("display", "block");
                 $(btn_name).animate({
                     opacity: 1,

@@ -144,7 +144,7 @@ class Ranking {
     showRanking(mapName) {
         $.ajax({
             type: "GET",
-            url: "get-ranking.php",
+            url: "/queries/get-ranking.php",
             data: {
                 'mapName': "'" + mapName + "'"
             },
@@ -153,19 +153,17 @@ class Ranking {
 
             success: function (json) {
 
-                console.log(json);
-
                 let i = 0;
                 let html = "";
                 for (let key in json) {
                     let row = json[key];
                     let userName = row[0];
                     let points = row[1];
-                    html += "<li>" + ++i + ". " + userName + " - " + points + "</li>";
+                    html += '<tr><th scope="row">' + ++i + '</th><td>' + userName + '</td><td>' + points + '</td></tr>';
                 }
 
                 $('#ranking-table h4').html("Ranking for map: " + mapName);
-                $('#ranking-table ul').html(html);
+                $('#ranking-table .table tbody').html(html);
             },
 
             error: function (error) {
@@ -179,7 +177,7 @@ class Ranking {
     getWorstPosition(mapName) {
         return $.ajax({
             type: "GET",
-            url: "/get-worst-position.php",
+            url: "/queries/get-worst-position.php",
             data: {
                 'map': "'" + mapName + "'"
             }
@@ -189,31 +187,44 @@ class Ranking {
     getNumberOfPositions(mapName) {
         return $.ajax({
             type: "GET",
-            url: "/get-number-positions.php",
+            url: "/queries/get-number-positions.php",
             data: {
                 'map': "'" + mapName + "'"
             }
         });
     }
 
+    getPlace(mapName, points) {
+        return $.ajax({
+            type: "GET",
+            url: "/queries/get-place.php",
+            data: {
+                'map': "'" + mapName + "'",
+                'points': points
+            }
+        });
+    }
+
     addToRanking(mapName, userName, points) {
-        $.ajax({
+        return $.ajax({
             type: "POST",
-            url: "add-to-ranking.php",
+            url: "/queries/add-to-ranking.php",
             data: {
                 'map': "'" + mapName + "'",
                 'user': "'" + userName + "'",
                 'points': points
+            }
+        });
+    }
 
-            },
-
-            success: function () {
-                console.log("Added to ranking!");
-            },
-
-            error: function (error) {
-                alert("Error on adding to the ranking!");
-                console.log(error);
+    updateRanking(mapName, userName, points) {
+        return $.ajax({
+            type: "POST",
+            url: "/queries/update-ranking.php",
+            data: {
+                'map': "'" + mapName + "'",
+                'user': "'" + userName + "'",
+                'points': points
             }
         });
     }
@@ -274,7 +285,6 @@ function collisionWithSnake(snake) {
 
 function collisionWithBorder(snake, mapSize) {
     if (snake.body[0].x == -1 || snake.body[0].x == mapSize || snake.body[0].y == -1 || snake.body[0].y == mapSize) {
-        console.log(snake.body[0].x + " " + snake.body[0].y + " " + mapSize);
         return true;
     }
     return false;
@@ -292,7 +302,7 @@ const ctx = cvs.getContext('2d');
 
 console.log("Loading images...");
 
-let items = ['images/apple.png', 'images/watermelon.png', 'images/orange.png', 'images/strawberry.png'];
+let items = ['images/apple.png'];
 
 loader(items, loadImage, function () {
     console.log("All images loaded...");
@@ -303,21 +313,29 @@ const imageApple = new Image();imageApple.src = "images/apple.png";
 // const imageOrange = new Image(); imageOrange.src = "images/orange.png";
 // const imageStrawberry = new Image(); imageStrawberry.src = "images/strawberry.png";
 
-//Generate basic board
-simpleBoard = new Board("Simple", 50, 1, "");
-simpleBoard.generateFields();
 //Get list of map
 mapList = new BoardList();
 
+//Generate basic board
+//simpleBoard = new Board("Simple", 15, 1, "");
+simpleBoard = mapList.getSpecifiedMap("Hard");
+simpleBoard.generateFields();
+simpleBoard.generateBarriers();
+
 let refreshMap;
 let moveSnake;
+let counter;
+let game;
 
 //Start button
 $(".start-game-button").click(function () {
     d = "RIGHT";
     try {
+        removeModal();
         clearInterval(refreshMap);
         clearInterval(moveSnake);
+        clearTimeout(counter);
+        clearTimeout(game);
     } catch (err) {
         console.log(err);
     }
@@ -344,7 +362,7 @@ $(".start-game-button").click(function () {
     let count = 3;
     $("#game-info h1").css("display", "block");
     $("#game-info h1").html(count);
-    let counter = setInterval(function () {
+    counter = setInterval(function () {
         count--;
         $("#game-info h1").html(count);
         if (count == 0) {
@@ -353,13 +371,13 @@ $(".start-game-button").click(function () {
         }
     }, 1000);
 
-    setTimeout(function () {
+    game = setTimeout(function () {
         moveSnake = setInterval(function () {
             locked = false;
             snake.move();
             //check if food eaten
             if (apple.eat()) {
-                gameStatistics.score += 5;
+                gameStatistics.score += 25;
                 $("#points").attr("value", "Points: " + gameStatistics.score);
             } else {
                 snake.body.pop();
@@ -367,6 +385,9 @@ $(".start-game-button").click(function () {
             if (collisionWithBarriers(snake, map) || collisionWithSnake(snake) || collisionWithBorder(snake, map.mapSize)) {
                 clearInterval(refreshMap);
                 clearInterval(moveSnake);
+                clearTimeout(counter);
+                clearTimeout(game);
+                console.log("Game finished!");
                 $("#game-finish").css("display", "block");
                 checkIfTop(map.getName(), gameStatistics.score);
             }
@@ -378,7 +399,6 @@ function loader(items, loadFunction, allDone) {
         return;
     }
 
-    //convert single item to array
     if ("undefined" === items.length) {
         items = [items];
     }
@@ -429,15 +449,21 @@ function checkIfTop(mapName, points) {
         console.log(err);
     }
 
-    var request = ranking.getNumberOfPositions(mapName);
-    request.done(function (numberOfPositions) {
+    var requestNumberOfPositions = ranking.getNumberOfPositions(mapName);
+    requestNumberOfPositions.done(function (numberOfPositions) {
         if (numberOfPositions[0][0] < 10) {
-            inTop(points);
+            var requestGetPlace = ranking.getPlace(mapName, points);
+            requestGetPlace.done(function (place) {
+                inTop(points, parseInt(place) + 1, mapName, "insert");
+            });
         } else {
-            var request2 = ranking.getWorstPosition(mapName);
-            request2.done(function (worstPosition) {
+            var requestGetWorstPosition = ranking.getWorstPosition(mapName);
+            requestGetWorstPosition.done(function (worstPosition) {
                 if (worstPosition[0][0] < points) {
-                    inTop(points);
+                    var requestGetPlace = ranking.getPlace(mapName, points);
+                    requestGetPlace.done(function (place) {
+                        inTop(points, parseInt(place) + 1, mapName, "update");
+                    });
                 } else {
                     notInTop(points);
                 }
@@ -446,17 +472,57 @@ function checkIfTop(mapName, points) {
     });
 }
 
-function inTop(points) {
-    $(".modal-body .scored-points").html("Scored points: " + points);
-    $(".ranking-info").html("Your place in the ranking: 5!<br>Enter your nickname:");
-    $(".ranking-info").after('<input type="text" class="form-control" id="inputName" placeholder="Tomek">');
-    $(".modal-footer").prepend('<button type="button" id="submitButton" class="btn btn-primary">Send</button>');
+function inTop(points, place, mapName, queryType) {
+    $("#game-finish .content").html('<div class="modal" tabindex="-1" role="dialog"> <div class="modal-dialog" role="document"> <div class="modal-content"> <div class="modal-header"> <h5 class="modal-title">GAME OVER</h5> </div><div class="modal-body"> <h5 class="scored-points">Scored points: ' + points + '</h5> <h5>Ranking:</h5> <p class="ranking-info"> Your place in the ranking: ' + place + '!<br>Enter your nickname: <p></p><input type="text" class="form-control" id="inputName" placeholder="Tomek"> </p></div><div class="modal-footer"> <button type="button" id="submitButton" class="btn btn-primary">Send</button> <button type="button" onclick="removeModal()" id="close-modal" class="btn btn-secondary" data-dismiss="modal">Close</button> </div></div></div></div>');
+    $("#submitButton").click(function () {
+        if ($("#inputName").val() == "" || $("#inputName").val() == null) {
+            try {
+                $(".error-nickname").remove();
+            } catch (err) {}
+            $(".ranking-info").append('<p></p><div class="error-nickname alert alert-danger" role="alert">Input your nickname!</div>');
+        } else if (!isValid($("#inputName").val())) {
+            try {
+                $(".error-nickname").remove();
+            } catch (err) {}
+            $(".ranking-info").append('<p></p><div class="error-nickname alert alert-danger" role="alert">You can use only letters and numbers in your nickname!</div>');
+        } else {
+            let ranking = new Ranking();
+            if (queryType == "insert") {
+                var request = ranking.addToRanking(mapName, $("#inputName").val(), points);
+                request.done(function (e) {
+                    console.log("[INSERT] Added to ranking!");
+                });
+            } else if (queryType == "update") {
+                var request = ranking.updateRanking(mapName, $("#inputName").val(), points);
+                request.done(function (e) {
+                    console.log("[UPDATE] Added to ranking!");
+                });
+            }
+
+            removeModal();
+        }
+    });
 }
 
 function notInTop(points) {
-    $(".modal-body .scored-points").html("Scored points: " + points);
-    $(".ranking-info").html("Unfortunately you did not qualify for the ranking.");
+    $("#game-finish .content").html('<div class="modal" tabindex="-1" role="dialog"> <div class="modal-dialog" role="document"> <div class="modal-content"> <div class="modal-header"> <h5 class="modal-title">GAME OVER</h5> </div><div class="modal-body"> <h5 class="scored-points">Scored points: ' + points + '</h5> <h5>Ranking:</h5> <p class="ranking-info"><i>Unfortunately you did not qualify for the ranking.</i></p></div><div class="modal-footer"> <button onclick="removeModal()" id="close-modal" type="button" class="btn btn-secondary" data-dismiss="modal">Close</button> </div></div></div></div>');
 }
+
+function removeModal() {
+    $(".modal").remove();
+}
+
+function isValid(str) {
+    return (/^\w+$/.test(str)
+    );
+}
+
+//Start button
+$(".show-ranking-button").click(function () {
+    var ranking = new Ranking();
+    ranking.showRanking($(".ranking-map-select").val());
+    console.log($(".ranking-map-select").val());
+});
 //
 // ─── CONTROLLER FOR BUTTONS GENERATING WINDOWS ─────────────────────────────────────────────────────
 //
@@ -479,6 +545,11 @@ $(document).ready(function () {
                 $(".right-panel, .left-panel").css("display", "none");
                 var btn_name = "start-button";
                 if ($(active_button).hasClass("start-button")) btn_name = ".game-panel, .game-left-panel";else btn_name = ".ranking-panel, .ranking-left-panel";
+                if ($(active_button).hasClass("ranking-button")) {
+                    var ranking = new Ranking();
+                    ranking.showRanking($(".ranking-map-select").val());
+                    console.log($(".ranking-map-select").val());
+                }
                 $(btn_name).css("display", "block");
                 $(btn_name).animate({
                     opacity: 1
@@ -494,5 +565,4 @@ $(document).ready(function () {
 
     let ranking = new Ranking();
     ranking.showRanking('Easy');
-    checkIfTop('Easy', 500);
 });

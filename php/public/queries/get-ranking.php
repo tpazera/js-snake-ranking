@@ -7,12 +7,11 @@ require_once('connection.php');
 
 $mapName = $_GET["mapName"];
 
-$queryGetRanking = "SELECT ranking.user_name, ranking.points FROM ranking WHERE ranking.map_name = $mapName";
-$resultGetRanking = mysqli_query($db, $queryGetRanking);
-/*Przygotowanie tablicy, która będzie przechowywać dane z bazy*/
+$query = "SELECT ranking.user_name, ranking.points FROM ranking WHERE ranking.map_name = $mapName ORDER BY points DESC;";
+$resultQuery = mysqli_query($db, $query);
 $result = array();
  
-while ($row = mysqli_fetch_row($resultGetRanking)) 
+while ($row = mysqli_fetch_row($resultQuery)) 
 {
   $result[] = $row;
 }

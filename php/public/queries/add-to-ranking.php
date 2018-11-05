@@ -19,8 +19,9 @@ $mapNameFiltered=filter($mapName);
 $userNameFiltered=filter($userName);
 $pointsFiltered=filter($points);
  
-$queryAddToRanking = "INSERT INTO ranking (user_name, points, map_name) VALUES ('$userNameFiltered', $pointsFiltered, '$mapNameFiltered')";
+$query = "INSERT INTO ranking (user_name, points, map_name) VALUES ($userNameFiltered, $pointsFiltered, $mapNameFiltered)";
 
-$resultAdd = mysqli_query($db, $queryAddToRanking);
+
+$resultAdd = mysqli_query($db, $query);
 
 ?>

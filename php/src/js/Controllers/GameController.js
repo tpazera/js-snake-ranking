@@ -12,9 +12,10 @@ const ctx = cvs.getContext('2d');
 console.log("Loading images...")
 
 let items = ['images/apple.png',
-             'images/watermelon.png',
-             'images/orange.png',
-             'images/strawberry.png'];
+             //'images/watermelon.png',
+             //'images/orange.png',
+             //'images/strawberry.png'
+            ];
 
 loader(items, loadImage, function () {
     console.log("All images loaded...");
@@ -25,21 +26,30 @@ const imageApple = new Image(); imageApple.src = "images/apple.png";
 // const imageOrange = new Image(); imageOrange.src = "images/orange.png";
 // const imageStrawberry = new Image(); imageStrawberry.src = "images/strawberry.png";
 
-//Generate basic board
-simpleBoard = new Board("Simple", 50, 1, "");
-simpleBoard.generateFields();
 //Get list of map
 mapList = new BoardList();
 
+//Generate basic board
+//simpleBoard = new Board("Simple", 15, 1, "");
+simpleBoard = mapList.getSpecifiedMap("Hard");
+simpleBoard.generateFields();
+simpleBoard.generateBarriers();
+
+
 let refreshMap;
 let moveSnake;
+let counter;
+let game;
 
 //Start button
 $(".start-game-button").click(function() {
     d = "RIGHT";
     try {
+        removeModal();
         clearInterval(refreshMap);
         clearInterval(moveSnake);
+        clearTimeout(counter);
+        clearTimeout(game);
     } catch(err) {
         console.log(err);
     }
@@ -66,7 +76,7 @@ $(".start-game-button").click(function() {
     let count = 3;
     $("#game-info h1").css("display", "block");
     $("#game-info h1").html(count);
-    let counter = setInterval(function() {
+    counter = setInterval(function() {
         count--;
         $("#game-info h1").html(count);
         if(count == 0) {
@@ -75,13 +85,13 @@ $(".start-game-button").click(function() {
         }
     }, 1000);
 
-    setTimeout(function () {
+    game = setTimeout(function () {
         moveSnake = setInterval(function() {
             locked = false;
             snake.move();
             //check if food eaten
             if(apple.eat()) {
-                gameStatistics.score += 5;
+                gameStatistics.score += 25;
                 $("#points").attr("value", "Points: " + gameStatistics.score);
             } else {
                 snake.body.pop();
@@ -89,6 +99,9 @@ $(".start-game-button").click(function() {
             if(collisionWithBarriers(snake, map) || collisionWithSnake(snake) || collisionWithBorder(snake, map.mapSize)) {
                 clearInterval(refreshMap);
                 clearInterval(moveSnake);
+                clearTimeout(counter);
+                clearTimeout(game);
+                console.log("Game finished!");
                 $("#game-finish").css("display", "block");
                 checkIfTop(map.getName(), gameStatistics.score);
             }
