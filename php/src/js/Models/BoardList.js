@@ -11,6 +11,6 @@ class BoardList {
 
     getSpecifiedMap(map_name) {
         return this.boardList.get(map_name);
-    }
+    } 
 
-}
+} 

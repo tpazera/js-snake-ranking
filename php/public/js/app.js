@@ -20,49 +20,6 @@ class Coordinates {
         this.y = y;
     }
 }
-class AppleFood extends Coordinates {
-
-    constructor() {
-        super(0, 0);
-        this.imageApple = new Image();
-        this.imageApple.src = "images/apple.png";
-    }
-
-    findLocation(map, snake) {
-        this.setX(Math.floor(Math.random() * map.mapSize));
-        this.setY(Math.floor(Math.random() * map.mapSize));
-        let barriersArray = map.getBarriers().getBarriersArray();
-        for (let i = 0; i < barriersArray.length; i++) {
-            if (this.getX() == barriersArray[i].getX() && this.getY() == barriersArray[i].getY()) {
-                return false;
-            }
-        }
-        for (let i = 0; i < snake.body.length; i++) {
-            if (this.getX() == snake.body[i].x && this.getY() == snake.body[i].y) return false;
-        }
-        return true;
-    }
-
-    create(map, snake) {
-        let boolFindLocation = this.findLocation(map, snake);
-        while (true) {
-            if (boolFindLocation) break;else boolFindLocation = this.findLocation(map, snake);
-        }
-    }
-
-    draw(map, ctx) {
-        ctx.drawImage(this.imageApple, this.getX() * map.fieldSize, this.getY() * map.fieldSize, map.fieldSize, map.fieldSize);
-    }
-
-    eat(map, snake) {
-        if (this.getX() == snake.body[0].x && this.getY() == snake.body[0].y) {
-            this.create(map, snake);
-            return true;
-        }
-        return false;
-    }
-
-}
 class Barrier extends Coordinates {
     constructor(color, x, y) {
         super(x, y);
@@ -113,6 +70,7 @@ class Board {
         this.mapSize = mapSize;
         this.speed = speed;
         this.barriers = barriers;
+        this.fieldSize = $("#game-canvas").attr("height") / this.mapSize;
     }
 
     getName() {
@@ -151,18 +109,21 @@ class Board {
     }
 
     generateFields(ctx) {
-        this.fieldSize = $("#game-canvas").attr("height") / this.mapSize;
-        for (let i = 0; i < this.mapSize; i++) for (let j = 0; j < this.mapSize; j++) {
-            if (i % 2 == j % 2) ctx.fillStyle = "#c9edb1";else ctx.fillStyle = "#91dd5f";
-            ctx.fillRect(i * this.fieldSize, j * this.fieldSize, this.fieldSize, this.fieldSize);
+        let fieldSize = $("#game-canvas").attr("height") / this.mapSize;
+        for (let i = 0; i < this.mapSize; i++) {
+            for (let j = 0; j < this.mapSize; j++) {
+                if (i % 2 == j % 2) ctx.fillStyle = "#c9edb1";else ctx.fillStyle = "#91dd5f";
+                ctx.fillRect(i * fieldSize, j * fieldSize, fieldSize, fieldSize);
+            }
         }
     }
 
     generateBarriers(ctx) {
+        let fieldSize = $("#game-canvas").attr("height") / this.mapSize;
         let barriersArray = this.barriers.getBarriersArray();
         for (let i = 0; i < barriersArray.length; i++) {
             ctx.fillStyle = barriersArray[i].getColor();
-            ctx.fillRect(barriersArray[i].getX() * this.fieldSize, barriersArray[i].getY() * this.fieldSize, this.fieldSize, this.fieldSize);
+            ctx.fillRect(barriersArray[i].getX() * fieldSize, barriersArray[i].getY() * fieldSize, fieldSize, fieldSize);
         }
     }
 }
@@ -181,6 +142,49 @@ class BoardList {
 
     getSpecifiedMap(map_name) {
         return this.boardList.get(map_name);
+    }
+
+}
+class AppleFood extends Coordinates {
+
+    constructor() {
+        super(0, 0);
+        this.imageApple = new Image();
+        this.imageApple.src = "images/apple.png";
+    }
+
+    findLocation(map, snake) {
+        this.setX(Math.floor(Math.random() * map.mapSize));
+        this.setY(Math.floor(Math.random() * map.mapSize));
+        let barriersArray = map.getBarriers().getBarriersArray();
+        for (let i = 0; i < barriersArray.length; i++) {
+            if (this.getX() == barriersArray[i].getX() && this.getY() == barriersArray[i].getY()) {
+                return false;
+            }
+        }
+        for (let i = 0; i < snake.body.length; i++) {
+            if (this.getX() == snake.body[i].x && this.getY() == snake.body[i].y) return false;
+        }
+        return true;
+    }
+
+    create(map, snake) {
+        let boolFindLocation = this.findLocation(map, snake);
+        while (true) {
+            if (boolFindLocation) break;else boolFindLocation = this.findLocation(map, snake);
+        }
+    }
+
+    draw(map, ctx) {
+        ctx.drawImage(this.imageApple, this.getX() * map.fieldSize, this.getY() * map.fieldSize, map.fieldSize, map.fieldSize);
+    }
+
+    eat(map, snake) {
+        if (this.getX() == snake.body[0].x && this.getY() == snake.body[0].y) {
+            this.create(map, snake);
+            return true;
+        }
+        return false;
     }
 
 }
@@ -302,6 +306,7 @@ class Snake {
 
     draw(map, ctx) {
         for (let i = 0; i < this.body.length; i++) {
+            console.log(this.body[i].getY());
             ctx.fillStyle = i == 0 ? "red" : "orange";
             ctx.fillRect(this.body[i].getX() * map.fieldSize, this.body[i].getY() * map.fieldSize, map.fieldSize, map.fieldSize);
         }
@@ -378,6 +383,9 @@ class GameController {
 
         this.apple = new AppleFood();
         this.snake = new Snake();
+        console.log(this.snake);
+        this.snake.draw(this.map, this.ctx);
+        this.apple.draw(this.map, this.ctx);
         this.gameStatistics = new GameStatistics();
 
         //Create default ranking
@@ -631,7 +639,6 @@ class RankingController {
         $(".show-ranking-button").click(function () {
             var ranking = new Ranking();
             ranking.showRanking($(".ranking-map-select").val());
-            console.log($(".ranking-map-select").val());
         });
     }
 
@@ -673,43 +680,48 @@ class RankingController {
 
 let screen = "game";
 
-$(document).ready(function () {
-    //show first panel - game panel
-    $(".game-panel").css("display", "block");
-    $(".game-left-panel").css("display", "block");
-    //bool for animation
-    let animation_end = true;
-    //"GAME" Button
-    $(".buttons-panel .start-button, .buttons-panel .ranking-button").click(function () {
-        if (animation_end) {
-            animation_end = false;
-            let active_button = $(this);
-            $(".right-panel, .left-panel").animate({
-                opacity: 0
-            }, 500, function () {});
-            setTimeout(function () {
-                $(".right-panel, .left-panel").css("display", "none");
-                let btn_name = "start-button";
-                if ($(active_button).hasClass("start-button")) btn_name = ".game-panel, .game-left-panel";else btn_name = ".ranking-panel, .ranking-left-panel";
-                if ($(active_button).hasClass("ranking-button")) {
-                    let rc = new Ranking();
-                    rc.showRanking($(".ranking-map-select").val());
-                }
-                $(btn_name).css("display", "block");
-                $(btn_name).animate({
-                    opacity: 1
+class WindowsController {
+    constructor() {
+        this.addButtonsListener();
+    }
+
+    addButtonsListener() {
+        $(".game-panel").css("display", "block");
+        $(".game-left-panel").css("display", "block");
+        //bool for animation
+        let animation_end = true;
+        //"GAME" Button
+        $(".buttons-panel .start-button, .buttons-panel .ranking-button").click(function () {
+            if (animation_end) {
+                animation_end = false;
+                let active_button = $(this);
+                $(".right-panel, .left-panel").animate({
+                    opacity: 0
                 }, 500, function () {});
-            }, 510);
-            setTimeout(function () {
-                animation_end = true;
-            }, 1020);
-        }
-    });
-});
+                setTimeout(function () {
+                    $(".right-panel, .left-panel").css("display", "none");
+                    let btn_name = "start-button";
+                    if ($(active_button).hasClass("start-button")) btn_name = ".game-panel, .game-left-panel";else btn_name = ".ranking-panel, .ranking-left-panel";
+                    if ($(active_button).hasClass("ranking-button")) {
+                        let rc = new Ranking();
+                        rc.showRanking($(".ranking-map-select").val());
+                    }
+                    $(btn_name).css("display", "block");
+                    $(btn_name).animate({
+                        opacity: 1
+                    }, 500, function () {});
+                }, 510);
+                setTimeout(function () {
+                    animation_end = true;
+                }, 1020);
+            }
+        });
+    }
+}
 let gameController;
 let kc;
 $(document).ready(function () {
-
+    WindowsController = new WindowsController();
     gameController = new GameController();
     kc = new KeyController();
 });

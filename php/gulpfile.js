@@ -22,7 +22,11 @@ gulp.task( 'scripts', function () {
 	return gulp
 		.src( [
 			'./src/js/Models/Coordinates.js',
-			'./src/js/Models/!(app, Coordinates)*.js',
+			'./src/js/Models/Barrier.js',
+			'./src/js/Models/BarriersArray.js',
+			'./src/js/Models/Board.js',
+			'./src/js/Models/BoardList.js',
+			'./src/js/Models/!(app, Coordinates, Board, BoardList, Barrier, BarriersArray)*.js',
 			'./src/js/Controllers/!(app)*.js',
 			'./src/js/!(vendor)**/!(app)*.js',
 			'./src/js/app.js'
@@ -31,7 +35,7 @@ gulp.task( 'scripts', function () {
 		.pipe( $.babel() )
 		.pipe( $.concat( 'app.js' ) )
 		//.pipe( $.uglify() )
-		.pipe( gulp.dest( 'public/js' ) )
+		.pipe( gulp.dest( 'public/js' ) ) 
 		.pipe( browserSync.reload( {stream: true} ) );
 } );
 

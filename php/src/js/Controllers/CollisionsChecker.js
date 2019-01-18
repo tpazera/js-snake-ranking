@@ -11,7 +11,7 @@ class CollisionsChecker {
             }
         }
         return false;
-    }
+    } 
     
     collisionWithSnake(snake) {
         for(let i = 1; i < snake.body.length; i++) {

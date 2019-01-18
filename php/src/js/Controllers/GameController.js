@@ -14,6 +14,9 @@ class GameController {
         
         this.apple = new AppleFood();
         this.snake = new Snake();
+        console.log(this.snake);
+        this.snake.draw(this.map, this.ctx); 
+        this.apple.draw(this.map, this.ctx);
         this.gameStatistics = new GameStatistics();
 
         //Create default ranking
