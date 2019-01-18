@@ -1,41 +1,42 @@
-class AppleFood {
+class AppleFood extends Coordinates {
 
-    constructor(map, snake) {
-        this.map = map;
-        this.barriers = map.barriersArray;
-        this.snake = snake;
+    constructor() {
+        super(0, 0)
+        this.imageApple = new Image(); 
+        this.imageApple.src = "images/apple.png";
     }
 
-    findLocation() {
-        this.x = Math.floor(Math.random()*this.map.mapSize);
-        this.y = Math.floor(Math.random()*this.map.mapSize);
-        for(let i = 0; i < this.barriers.length; i++) {
-            if(this.x == this.barriers[i].x && this.y == this.barriers[i].y) {
+    findLocation(map, snake) {
+        this.setX(Math.floor(Math.random()*map.mapSize));
+        this.setY(Math.floor(Math.random()*map.mapSize));
+        let barriersArray = map.getBarriers().getBarriersArray();
+        for(let i = 0; i < barriersArray.length; i++) {
+            if(this.getX() == barriersArray[i].getX() && this.getY() == barriersArray[i].getY()) {
                 return false;
             }
         }
-        for(let i = 0; i < this.snake.body.length; i++) {
-            if(this.x == this.snake.body[i].x && this.y == this.snake.body[i].y)
+        for(let i = 0; i < snake.body.length; i++) {
+            if(this.getX() == snake.body[i].x && this.getY() == snake.body[i].y)
                 return false;
         }
         return true;
     }
 
-    create() {
-        let boolFindLocation = this.findLocation();
+    create(map, snake) {
+        let boolFindLocation = this.findLocation(map, snake);
         while(true) {
             if(boolFindLocation) break;
-            else boolFindLocation = this.findLocation();
+            else boolFindLocation = this.findLocation(map, snake);
         }
     }
 
-    draw() {
-        ctx.drawImage(imageApple, this.x * this.map.fieldSize, this.y * this.map.fieldSize, this.map.fieldSize, this.map.fieldSize);
+    draw(map, ctx) {
+        ctx.drawImage(this.imageApple, this.getX() * map.fieldSize, this.getY() * map.fieldSize, map.fieldSize, map.fieldSize);
     }
 
-    eat() {
-        if(this.x == this.snake.body[0].x && this.y == this.snake.body[0].y) {
-            this.create();
+    eat(map, snake) {
+        if(this.getX() == snake.body[0].x && this.getY() == snake.body[0].y) {
+            this.create(map, snake);
             return true;
         }
         return false;

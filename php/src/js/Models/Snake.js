@@ -1,35 +1,39 @@
 class Snake {
     
-    constructor(map) {
-        this.map = map;
+    constructor() {
         this.body = [];
-        this.body[0] = {x: 3, y: 3};
-        this.body[1] = {x: 2, y: 3};
+        this.body[0] = new Coordinates(3, 3);
+        this.body[1] = new Coordinates(2, 3);
     }
 
-    draw() {
+    draw(map, ctx) {
         for(let i = 0; i < this.body.length; i++) {
             ctx.fillStyle = (i == 0) ? "red" : "orange";
-            ctx.fillRect(this.body[i].x*this.map.fieldSize, this.body[i].y*this.map.fieldSize, this.map.fieldSize, this.map.fieldSize);
+            ctx.fillRect(this.body[i].getX()*map.fieldSize, this.body[i].getY()*map.fieldSize, map.fieldSize, map.fieldSize);
         }
     }
 
-    move() {
-        let snakeX = this.body[0].x;
-        let snakeY = this.body[0].y;
+    move(direction) {
+        let snakeX = this.body[0].getX();
+        let snakeY = this.body[0].getY();
 
-        if(d == "LEFT") snakeX -= 1;
-        if(d == "RIGHT") snakeX += 1;
-        if(d == "UP") snakeY -= 1;
-        if(d == "DOWN") snakeY += 1;
+        if(direction == "LEFT") snakeX -= 1;
+        if(direction == "RIGHT") snakeX += 1;
+        if(direction == "UP") snakeY -= 1;
+        if(direction == "DOWN") snakeY += 1;
 
-        let newHead = {
-            x: snakeX,
-            y: snakeY
-        }
-
+        let newHead = new Coordinates(snakeX, snakeY);
+        
         this.body.unshift(newHead);
 
+    }
+
+    getBody() {
+        return this.body;
+    }
+
+    setBody(body) {
+        this.body = body;
     }
 
 }
