@@ -8,7 +8,6 @@ class Snake {
 
     draw(map, ctx) {
         for(let i = 0; i < this.body.length; i++) {
-            console.log(this.body[i].getY());
             ctx.fillStyle = (i == 0) ? "red" : "orange";
             ctx.fillRect(this.body[i].getX()*map.fieldSize, this.body[i].getY()*map.fieldSize, map.fieldSize, map.fieldSize);
         }
