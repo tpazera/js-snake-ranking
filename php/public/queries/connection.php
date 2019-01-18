@@ -1,6 +1,6 @@
 <?php
 
-$server = 'mysql';
+$server = 'mysql_snake';
 $user = 'root';
 $password = 'root';
 $database = 'snake';

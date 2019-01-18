@@ -1,21 +1,22 @@
 .container {
     margin-top: 50px;
+    width: 1000px !important;
+    max-width: 1000px !important;
  }
+
  .game-panel .game canvas {
      border: 2px solid black;
  }
-
+ body > div > div.row.main-panel > div.col-sm-6.buttons-panel {
+     width: 470px;
+     max-width: 470px;
+ }
  .right-panel {
      display: none;
  }
 
  .left-panel {
      display: none;
- }
-
- #builderContainer {
-     width: 600px;
-     height: 600px;
  }
 
  .bright {
@@ -33,12 +34,12 @@
 
 #game-info {
     position: absolute;
-    width: 600px;
-    height: 600px;
+    width: 500px;
+    height: 500px;
     top: 0;
     left: 0;
     padding-left: 30px;
-    padding-top: 235px;
+    padding-top: 185px;
     text-align: center;
     h1 {
         font-size: 100px;
@@ -48,8 +49,8 @@
 #game-finish {
     display: none;
     position: absolute;
-    width: 600px;
-    height: 600px;
+    width: 500px;
+    height: 500px;
     top: 0;
     left: 0;
     margin-left: 15px;
@@ -68,4 +69,8 @@
 
 .modal-header {
     min-width: 300px;
+}
+
+.row.game .col-lg-12 {
+    //text-align: center;
 }

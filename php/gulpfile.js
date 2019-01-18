@@ -21,7 +21,8 @@ gulp.task('vendorScripts', function() {
 gulp.task( 'scripts', function () {
 	return gulp
 		.src( [
-			'./src/js/Models/!(app)*.js',
+			'./src/js/Models/Coordinates.js',
+			'./src/js/Models/!(app, Coordinates)*.js',
 			'./src/js/Controllers/!(app)*.js',
 			'./src/js/!(vendor)**/!(app)*.js',
 			'./src/js/app.js'

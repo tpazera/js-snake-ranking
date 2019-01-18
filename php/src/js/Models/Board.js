@@ -5,7 +5,6 @@ class Board {
         this.mapSize = mapSize;
         this.speed = speed;
         this.barriers = barriers;
-        this.barriersArray = [];
     }
     
 	getName() { return this.name; }
@@ -27,34 +26,23 @@ class Board {
         return mapAttributes;
     }
 
-    generateFields() {
-        this.fieldSize = $("#game-canvas").attr("height") / this.mapSize;
+    generateFields(ctx) {
+        let = fieldSize = $("#game-canvas").attr("height") / this.mapSize;
         for(let i = 0; i < this.mapSize; i++)
             for(let j = 0; j < this.mapSize; j++) {
                 if(i%2 == j%2) ctx.fillStyle="#c9edb1";
                 else ctx.fillStyle="#91dd5f";
-                ctx.fillRect(i*this.fieldSize, j*this.fieldSize, this.fieldSize, this.fieldSize);
+                ctx.fillRect(i*fieldSize, j*fieldSize, fieldSize, fieldSize);
             }
     }
 
-    generateBarriers() {
-        let barriersArray = [];
-        ctx.fillStyle="black";
-        let x = 0;
-        for(let i = 0; i < this.mapSize; i++)
-            for(let j = 0; j < this.mapSize; j++) {
-                if(this.barriers[i*this.mapSize+j] == '1') {
-                    if (x % 2) ctx.fillStyle = "#1a273d";
-                    else ctx.fillStyle = "#161c26";
-                    barriersArray[x++] = {
-                        x: i,
-                        y: j
-                    }
-                    ctx.fillRect(i*this.fieldSize, j*this.fieldSize, this.fieldSize, this.fieldSize);
-                }
-            }
-        
-        this.barriersArray = barriersArray;
+    generateBarriers(ctx) {
+        let = fieldSize = $("#game-canvas").attr("height") / this.mapSize;
+        let barriersArray = this.barriers.getBarriersArray();
+        for(let i = 0; i < barriersArray.length; i++) {
+            ctx.fillStyle = barriersArray[i].getColor();
+            ctx.fillRect(barriersArray[i].getX()*fieldSize, barriersArray[i].getY()*fieldSize, fieldSize, fieldSize)
+        }
     }
 }
 

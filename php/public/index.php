@@ -21,7 +21,7 @@ require_once('queries/connection.php');
 <body>
     <div class="container">
         <div class="row header">
-            <div class="col-lg-12 text-center">
+            <div class="col-12 text-center">
                 <div class="page-header">
                     <h1>Ultimate Snake <small>by Tomasz Pazera</small></h1>
                 </div>
@@ -29,7 +29,7 @@ require_once('queries/connection.php');
         </div>
         <p></p>
         <div class="row main-panel">
-            <div class="col-lg-5 buttons-panel">
+            <div class="col-6 buttons-panel">
                 <div class="form-control btn btn-primary start-button">GAME</div>
                 <p></p>
                 <div class="form-control btn btn-success ranking-button">RANKING</div>
@@ -63,10 +63,10 @@ require_once('queries/connection.php');
                     <div class="form-control btn btn-info show-ranking-button">SHOW RANKING</div>
                 </div>
             </div>
-            <div class="col-lg-7 game-panel right-panel">
+            <div class="col-6 game-panel right-panel">
                 <div class="row game">
-                    <div class="col-lg-12">
-                        <canvas id="game-canvas" width="600" height="600">
+                    <div class="col-12">
+                        <canvas id="game-canvas" width="500" height="500">
                             Twoja przeglądarka nie obsługuje elementu Canvas.
                         </canvas>
                         <div id="game-info">
@@ -100,9 +100,9 @@ require_once('queries/connection.php');
                     </div>
                 </div>
             </div>
-            <div class="col-lg-7 ranking-panel right-panel">
+            <div class="col-6 ranking-panel right-panel">
                 <div class="row game">
-                    <div class="col-lg-12">
+                    <div class="col-12">
                         <div id="ranking-table" class="ranking">
                             <h4>Ranking for map: Easy</h4>
                             <table class="table">
@@ -130,7 +130,11 @@ require_once('queries/connection.php');
         crossorigin="anonymous"></script>
     <script src="js/vendor/jquery.js"></script>
     <script src="js/app.js"></script>
-
+    <script>
+        function removeModal() {
+            $(".modal").remove();
+        }
+    </script>
 </body>
 
 </html>

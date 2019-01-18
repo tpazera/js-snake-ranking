@@ -19,8 +19,8 @@ $mapNameFiltered=filter($mapName);
 $userNameFiltered=filter($userName);
 $pointsFiltered=filter($points);
  
-$query = "UPDATE ranking SET user_name=$userNameFiltered, points=$pointsFiltered WHERE id_rank=(SELECT id_rank FROM ranking WHERE points = (SELECT MIN(points) FROM ranking WHERE map_name = $mapNameFiltered) AND map_name = $mapNameFiltered)";
+$query = "UPDATE ranking SET user_name=$userNameFiltered, points=$pointsFiltered WHERE id_rank=(SELECT id_rank FROM ranking WHERE points = (SELECT MIN(points) FROM ranking WHERE map_name = $mapNameFiltered) AND map_name = $mapNameFiltered LIMIT 1);";
 
-$resultAdd = mysqli_query($db, $query);
+$resultUpdate = mysqli_query($db, $query);
 
 ?>

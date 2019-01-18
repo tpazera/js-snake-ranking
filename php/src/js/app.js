@@ -1,6 +1,8 @@
+let gameController;
+let kc;
 $(document).ready(function () {
 
-    let ranking = new Ranking();
-    ranking.showRanking('Easy');
+    gameController = new GameController();
+    kc = new KeyController();
 
 });
