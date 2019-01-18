@@ -1,111 +1,147 @@
 //
 // ─── GAME CONTROLLER ────────────────────────────────────────────────────────────
 //
+class GameController {
 
+    constructor() {
+        //Get canvas context
+        let cvs = document.getElementById('game-canvas');
+        this.ctx = cvs.getContext('2d');
 
-//
-// ─── PREPARATIONS ───────────────────────────────────────────────────────────────
-//
-const cvs = document.getElementById('game-canvas');
-const ctx = cvs.getContext('2d');
+        //Generate default map
+        let mapList = new BoardList();
+        this.map = this.generateMap(mapList, "Hard");
+        
+        this.apple = new AppleFood();
+        this.snake = new Snake();
+        this.gameStatistics = new GameStatistics();
 
-console.log("Loading images...")
+        //Create default ranking
+        let rc = new RankingController();
+        rc.showRanking('Easy');
 
-let items = ['images/apple.png',
-             //'images/watermelon.png',
-             //'images/orange.png',
-             //'images/strawberry.png'
-            ];
+        //Load images
+        let imagesLoader = new ImagesLoader();
+        let items = ['images/apple.png'];
+        imagesLoader.loader(items, imagesLoader.loadImage, function () {
+            console.log("All images loaded...");
+        });
 
-loader(items, loadImage, function () {
-    console.log("All images loaded...");
-});
-
-const imageApple = new Image(); imageApple.src = "images/apple.png";
-// const imageWatermelon = new Image(); imageWatermelon.src = "images/watermelon.png";
-// const imageOrange = new Image(); imageOrange.src = "images/orange.png";
-// const imageStrawberry = new Image(); imageStrawberry.src = "images/strawberry.png";
-
-//Get list of map
-mapList = new BoardList();
-
-//Generate basic board
-//simpleBoard = new Board("Simple", 15, 1, "");
-simpleBoard = mapList.getSpecifiedMap("Hard");
-simpleBoard.generateFields();
-simpleBoard.generateBarriers();
-
-
-let refreshMap;
-let moveSnake;
-let counter;
-let game;
-
-//Start button
-$(".start-game-button").click(function() {
-    d = "RIGHT";
-    try {
-        removeModal();
-        clearInterval(refreshMap);
-        clearInterval(moveSnake);
-        clearTimeout(counter);
-        clearTimeout(game);
-    } catch(err) {
-        console.log(err);
+        //Start button listener
+        this.game();
+        
+    
     }
-    ctx.clearRect(0, 0, cvs.width, cvs.height);
-    let map_name = $(".game-map-select").val();
-    let map = mapList.getSpecifiedMap(map_name);
-    map.generateFields();
-    map.generateBarriers();
-    let snake = new Snake(map);
-    let apple = new AppleFood(map, snake);
-    let gameStatistics = new GameStatistics();
 
-    $("#points").attr("value", "Points: " + gameStatistics.score);
+    game() {
+        let collisionsChecker = new CollisionsChecker();
+        //Intervals and timeouts
+        let refreshMap;
+        let moveSnake;
+        let counter;
+        let game;
 
-    apple.create();
+        let gc = this;
 
-    refreshMap = setInterval(function() {
-        map.generateFields();
-        map.generateBarriers();
-        snake.draw();
-        apple.draw();
-    }, 50);
-
-    let count = 3;
-    $("#game-info h1").css("display", "block");
-    $("#game-info h1").html(count);
-    counter = setInterval(function() {
-        count--;
-        $("#game-info h1").html(count);
-        if(count == 0) {
-            $("#game-info h1").css("display", "none");
-            clearInterval(counter);
-        }
-    }, 1000);
-
-    game = setTimeout(function () {
-        moveSnake = setInterval(function() {
-            locked = false;
-            snake.move();
-            //check if food eaten
-            if(apple.eat()) {
-                gameStatistics.score += 25;
-                $("#points").attr("value", "Points: " + gameStatistics.score);
-            } else {
-                snake.body.pop();
-            }
-            if(collisionWithBarriers(snake, map) || collisionWithSnake(snake) || collisionWithBorder(snake, map.mapSize)) {
+        //Start button
+        $(".start-game-button").click(function() {
+            try {
+                //Clear all intervals and timeouts every button click
+                gc.removeModal();
                 clearInterval(refreshMap);
                 clearInterval(moveSnake);
                 clearTimeout(counter);
                 clearTimeout(game);
-                console.log("Game finished!");
-                $("#game-finish").css("display", "block");
-                checkIfTop(map.getName(), gameStatistics.score);
+            } catch(err) {
+                console.log(err);
             }
-        }, 10*(110-map.speed));
-    }, 3000);
+            //Clear old map and generate 
+            gc.getContext().clearRect(0, 0, document.getElementById('game-canvas').width, document.getElementById('game-canvas').height);
 
-});
+            //New settings based on input
+            let mapName = $(".game-map-select").val();
+
+            gc.map = gc.generateMap(new BoardList(), mapName);
+            gc.snake = new Snake();
+            gc.apple = new AppleFood();
+            gc.gameStatistics = new GameStatistics();
+
+            $("#points").attr("value", "Points: " + gc.gameStatistics.getScore());
+            gc.apple.create(gc.map, gc.snake);
+
+            refreshMap = setInterval(function() {
+                gc.map.generateFields(gc.ctx);
+                gc.map.generateBarriers(gc.ctx);
+                gc.snake.draw(gc.map, gc.getContext());
+                gc.apple.draw(gc.map, gc.getContext());
+            }, 50);
+
+            //COUNTER
+            let count = 3;
+            $("#game-info h1").css("display", "block");
+            $("#game-info h1").html(count);
+            counter = setInterval(function() {
+                count--;
+                $("#game-info h1").html(count);
+                if(count == 0) { 
+                    $("#game-info h1").css("display", "none");
+                    clearInterval(counter);
+                } 
+            }, 1000);
+
+
+            //GAME LISTENER, AFTER 3 SECONDS START MOVING SNAKE
+            game = setTimeout(function () {
+                kc.setDirection("RIGHT");
+                moveSnake = setInterval(function() {
+                    kc.locked = false;
+                    gc.snake.move(kc.getDirection());
+                    //check if food eaten
+                    if(gc.apple.eat(gc.map, gc.snake)) {
+                        gc.gameStatistics.increaseScore();
+                        $("#points").attr("value", "Points: " + gc.gameStatistics.getScore());
+                    } else {
+                        gc.snake.body.pop();
+                    }
+                    if(collisionsChecker.collisionWithBarriers(gc.snake, gc.map) || collisionsChecker.collisionWithSnake(gc.snake) || collisionsChecker.collisionWithBorder(gc.snake, gc.map.mapSize)) {
+                        clearInterval(refreshMap);
+                        clearInterval(moveSnake);
+                        clearTimeout(counter);
+                        clearTimeout(game);
+                        console.log("Game finished!");
+                        $("#game-finish").css("display", "block");
+                        let rc = new RankingController();
+                        rc.checkIfTop(gc.map.getName(), gc.gameStatistics.getScore());
+                    }
+                }, 10*(110-gc.map.speed));
+            }, 3000);
+
+        });
+
+    }
+
+    generateMap(mapList, mapName) {
+        let map = mapList.getSpecifiedMap(mapName);
+        map.generateFields(this.ctx);
+        map.generateBarriers(this.ctx);
+        return map;
+    }
+
+    removeModal() {
+        $(".modal").remove();
+    }
+
+    getContext() {
+        return this.ctx;
+    }
+
+    setContext(ctx) {
+        this.ctx = ctx;
+    }
+
+}
+
+
+
+
+
