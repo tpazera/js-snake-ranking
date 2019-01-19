@@ -1,3 +1,6 @@
+//removeIf(production)
+var Coordinates = require("./Coordinates.js");
+//endRemoveIf(production)
 class AppleFood extends Coordinates {
 
     constructor() {
@@ -43,3 +46,8 @@ class AppleFood extends Coordinates {
     }
 
 }
+
+
+//removeIf(production)
+module.exports = AppleFood;
+//endRemoveIf(production)

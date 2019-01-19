@@ -1,3 +1,6 @@
+//removeIf(production)
+var Coordinates = require("./Coordinates.js");
+//endRemoveIf(production)
 class Barrier extends Coordinates {
     constructor(color, x, y) {
         super(x, y);
@@ -12,3 +15,9 @@ class Barrier extends Coordinates {
         this.color = color;
     }
 }
+
+
+
+//removeIf(production)
+module.exports = Barrier;
+//endRemoveIf(production)

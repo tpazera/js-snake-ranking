@@ -1,3 +1,6 @@
+//removeIf(production)
+var Coordinates = require("./Coordinates.js");
+//endRemoveIf(production)
 class Snake {
     
     constructor() {
@@ -37,3 +40,8 @@ class Snake {
     }
 
 }
+
+
+//removeIf(production)
+module.exports = Snake;
+//endRemoveIf(production)

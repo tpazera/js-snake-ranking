@@ -30,3 +30,8 @@ class CollisionsChecker {
     }
 
 }
+
+
+//removeIf(production)
+module.exports = CollisionsChecker;
+//endRemoveIf(production)

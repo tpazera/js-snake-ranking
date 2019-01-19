@@ -6,7 +6,7 @@ class Coordinates {
 
     getX() {
         return this.x;
-    }
+    } 
 
     getY() {
         return this.y;
@@ -20,3 +20,6 @@ class Coordinates {
         this.y = y;
     }
 }
+//removeIf(production)
+module.exports = Coordinates;  
+//endRemoveIf(production)

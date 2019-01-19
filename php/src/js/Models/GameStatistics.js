@@ -13,3 +13,7 @@ class GameStatistics {
     }
 
 }
+
+//removeIf(production)
+module.exports = GameStatistics;
+//endRemoveIf(production)

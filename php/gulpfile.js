@@ -3,6 +3,9 @@ var
 	browserSync = require( 'browser-sync' ),
 	$ = require( 'gulp-load-plugins' )( {lazy: true} );
 
+var replace = require('gulp-string-replace');
+const removeCode = require('gulp-remove-code');
+
 gulp.task( 'styles', function () {
 	return gulp
 		.src( './src/sass/**/*.scss' )
@@ -31,6 +34,7 @@ gulp.task( 'scripts', function () {
 			'./src/js/!(vendor)**/!(app)*.js',
 			'./src/js/app.js'
 		] )
+		.pipe( removeCode({ production: true }) )
 		.pipe( $.plumber() )
 		.pipe( $.babel() )
 		.pipe( $.concat( 'app.js' ) )

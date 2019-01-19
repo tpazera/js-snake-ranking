@@ -1,3 +1,6 @@
+//removeIf(production)
+var Barrier = require("./Barrier.js");
+//endRemoveIf(production)
 class BarriersArray {
     constructor(barriersString, mapSize) {
         this.barriers = [];
@@ -27,3 +30,7 @@ class BarriersArray {
         }
     }
 }
+
+//removeIf(production)
+module.exports = BarriersArray;
+//endRemoveIf(production)
