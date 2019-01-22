@@ -4,7 +4,6 @@ require_once('connection.php');
  
 function filter($variable) 
 {
-  $variable = substr($variable, 0, 9); // Ograniczenie ciągu do pierwszych 10 znaków
   $variable = trim($variable);
   $variable = stripslashes($variable);
   $variable = htmlspecialchars($variable); 
@@ -23,5 +22,7 @@ $query = "INSERT INTO ranking (user_name, points, map_name) VALUES ($userNameFil
 
 
 $resultAdd = mysqli_query($db, $query);
+
+echo $resultAdd;
 
 ?>

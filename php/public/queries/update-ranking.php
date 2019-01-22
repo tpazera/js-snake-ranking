@@ -4,7 +4,6 @@ require_once('connection.php');
  
 function filter($variable) 
 {
-  $variable = substr($variable, 0, 9); // Ograniczenie ciągu do pierwszych 10 znaków
   $variable = trim($variable);
   $variable = stripslashes($variable);
   $variable = htmlspecialchars($variable); 
